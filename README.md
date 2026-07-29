@@ -61,16 +61,14 @@ cd nextjs-dev-blog
 npm install
 
 3. Environment Variables
-4. 
-Create a .env.local file in the root directory and add your MongoDB connection string:
+4. Create a .env.local file in the root directory and add your MongoDB connection string:
 
 Code snippet
 
 MONGODB_URI=your_mongodb_connection_string
 
 4. Run Development Server
-
-   
+    
 Start the local server:
 ```
 Bash
@@ -89,5 +87,5 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 🖥️ Live Link: https://jahir-tawhid.github.io/nextjs-dev-blog/
 
-# 📝 License:
+📝 License:
 This project is licensed under the MIT License.
