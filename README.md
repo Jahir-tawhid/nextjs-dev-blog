@@ -81,7 +81,9 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 🔗 LinkedIn: https://linkedin.com/in/jahirtawhid
 
-🖥️ Live Link: https://jahir-tawhid.github.io/nextjs-dev-blog/
+# 🚀 DevBlog & Portfolio Platform
+
+🔗 **Live Demo:** [https://nextjs-dev-blog-five.vercel.app](https://nextjs-dev-blog-five.vercel.app)
 
 📝 License:
 This project is licensed under the MIT License.
