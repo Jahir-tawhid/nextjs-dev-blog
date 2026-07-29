@@ -52,22 +52,18 @@ Make sure you have Node.js (v18 or higher) and npm installed.
 
 2. Installation
 Clone the repository and install dependencies:
-
+```
 Bash
 git clone 
-
 cd nextjs-dev-blog
-
 npm install
-
+```
 3. Environment Variables
 4. Create a .env.local file in the root directory and add your MongoDB connection string:
 
 Code snippet
 
-MONGODB_URI=your_mongodb_connection_string
-
-4. Run Development Server
+Run Development Server
     
 Start the local server:
 ```
