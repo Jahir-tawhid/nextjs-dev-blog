@@ -54,7 +54,7 @@ Make sure you have Node.js (v18 or higher) and npm installed.
 Clone the repository and install dependencies:
 
 Bash
-git clone [https://github.com/YOUR_USERNAME/nextjs-dev-blog.git](https://github.com/YOUR_USERNAME/nextjs-dev-blog.git)
+git clone 
 
 cd nextjs-dev-blog
 
@@ -87,7 +87,7 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 🔗 LinkedIn: https://linkedin.com/in/jahirtawhid
 
-🖥️ Live Link: 
+🖥️ Live Link: https://jahir-tawhid.github.io/nextjs-dev-blog/
 
-📝 License
+# 📝 License:
 This project is licensed under the MIT License.
