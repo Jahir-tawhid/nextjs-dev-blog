@@ -55,22 +55,39 @@ Clone the repository and install dependencies:
 
 Bash
 git clone [https://github.com/YOUR_USERNAME/nextjs-dev-blog.git](https://github.com/YOUR_USERNAME/nextjs-dev-blog.git)
+
 cd nextjs-dev-blog
+
 npm install
+
 3. Environment Variables
+4. 
 Create a .env.local file in the root directory and add your MongoDB connection string:
 
 Code snippet
-MONGODB_URI=your_mongodb_connection_string
-4. Run Development Server
-Start the local server:
 
+MONGODB_URI=your_mongodb_connection_string
+
+4. Run Development Server
+
+   
+Start the local server:
+```
 Bash
 npm run dev
 Open http://localhost:3000 in your browser to view the application.
-
+```
 🤝 Contributing
+
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
+
+📬 Contact Me Feel free to reach out for collaborations or questions regarding the project logic:
+
+📧 Email: https://www.jahirtawhid1988@gmail.com
+
+🔗 LinkedIn: https://linkedin.com/in/jahirtawhid
+
+🖥️ Live Link: 
 
 📝 License
 This project is licensed under the MIT License.
