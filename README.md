@@ -1,8 +1,6 @@
 # 🚀 DevBlog & Portfolio Platform
 
-A modern, high-performance **Full-Stack Blog and Portfolio Platform** built with **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS v4**, and **MongoDB**. 
-
-This platform allows developers and creators to write, manage, and showcase technical articles with seamless CRUD operations, category filtering, search capability, and dark mode customization.
+A modern, high-performance **Full-Stack Blog and Portfolio Platform** built with **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS v4**, and **MongoDB**.  This platform allows developers and creators to write, manage, and showcase technical articles with seamless CRUD operations, category filtering, search capability, and dark mode customization.
 
 ---
 
