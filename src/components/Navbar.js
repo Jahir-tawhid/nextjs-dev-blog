@@ -1,22 +1,25 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Blogs', href: '/blogs' },
-    { name: '+ Create Blog', href: '/blogs/create' },
+    { name: "Home", href: "/" },
+    { name: "Blogs", href: "/blogs" },
+    { name: "+ Create Blog", href: "/admin/create-blog" }, // Updated route path
   ];
 
   return (
     <aside className="w-64 min-h-screen border-r border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/50 p-6 flex flex-col justify-between sticky top-0 h-screen">
       <div>
         {/* Brand Logo */}
-        <Link href="/" className="text-2xl font-black text-gray-900 dark:text-white block mb-8 tracking-tight">
+        <Link
+          href="/"
+          className="text-2xl font-black text-gray-900 dark:text-white block mb-8 tracking-tight"
+        >
           DevBlog<span className="text-blue-500">.</span>
         </Link>
 
@@ -30,8 +33,8 @@ export default function Navbar() {
                 href={item.href}
                 className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200/60 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white'
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-200/60 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {item.name}

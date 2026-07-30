@@ -10,7 +10,7 @@ export default function PostDetailsPage({ params }) {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // কমেন্ট সেকশনের জন্য স্টেট
+  // State management for comments section
   const [comments, setComments] = useState([]);
   const [commentAuthor, setCommentAuthor] = useState("");
   const [commentText, setCommentText] = useState("");
@@ -18,12 +18,12 @@ export default function PostDetailsPage({ params }) {
   useEffect(() => {
     async function fetchPostDetails() {
       try {
-        // ১. API ডাটা লোড
+        // 1. Fetch posts data from API
         const res = await fetch("/api/posts");
         const apiPosts = await res.json();
         const safeApiPosts = Array.isArray(apiPosts) ? apiPosts : [];
 
-        // ২. LocalStorage ডাটা লোড
+        // 2. Fetch posts data from LocalStorage
         const localData = localStorage.getItem("blog_posts");
         let localPosts = [];
         if (localData) {
@@ -31,7 +31,7 @@ export default function PostDetailsPage({ params }) {
           localPosts = Array.isArray(parsed) ? parsed : [];
         }
 
-        // সমস্ত পোস্ট একত্রিত করে আইডি দিয়ে খোঁজা (String এ রূপান্তর করে)
+        // Combine all posts and find the specific post by matching ID (converted to string)
         const allPosts = [...localPosts, ...safeApiPosts];
         const foundPost = allPosts.find((p) => String(p.id) === String(postId));
         setPost(foundPost || null);
@@ -47,7 +47,7 @@ export default function PostDetailsPage({ params }) {
     }
   }, [postId]);
 
-  // LocalStorage থেকে শুধুমাত্র এই পোস্টের কমেন্টগুলো লোড করা
+  // Load comments specific to this post from LocalStorage
   useEffect(() => {
     if (!postId) return;
     const rawComments = localStorage.getItem(`comments_${postId}`);
@@ -61,7 +61,7 @@ export default function PostDetailsPage({ params }) {
     }
   }, [postId]);
 
-  // নতুন কমেন্ট হ্যান্ডেল করা
+  // Handle new comment submission
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
@@ -115,7 +115,7 @@ export default function PostDetailsPage({ params }) {
 
   return (
     <main className="p-6 md:p-10 max-w-3xl mx-auto">
-      {/* ব্যাক বাটন */}
+      {/* Back Button */}
       <div className="mb-6">
         <Link
           href="/"
@@ -125,7 +125,7 @@ export default function PostDetailsPage({ params }) {
         </Link>
       </div>
 
-      {/* মেটা তথ্য */}
+      {/* Meta Information */}
       <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-4">
         <span className="font-semibold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
           {post.category || "General"}
@@ -135,12 +135,12 @@ export default function PostDetailsPage({ params }) {
         <span>{post.date}</span>
       </div>
 
-      {/* টাইটেল */}
+      {/* Article Title */}
       <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-6">
         {post.title}
       </h1>
 
-      {/* কনটেন্ট */}
+      {/* Article Content */}
       <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed space-y-4 mb-12">
         <p className="text-lg font-medium">{post.desc || post.description}</p>
         {post.content ? (
@@ -154,13 +154,13 @@ export default function PostDetailsPage({ params }) {
         )}
       </div>
 
-      {/* ==================== COMMENT SECTION ==================== */}
+      {/* ==================== COMMENTS SECTION ==================== */}
       <section className="pt-8 border-t border-gray-200 dark:border-gray-800">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
           Comments ({comments.length})
         </h3>
 
-        {/* কমেন্ট ফর্ম */}
+        {/* Comment Input Form */}
         <form onSubmit={handleCommentSubmit} className="mb-8 space-y-4">
           <div>
             <input
@@ -189,7 +189,7 @@ export default function PostDetailsPage({ params }) {
           </button>
         </form>
 
-        {/* কমেন্ট লিস্ট */}
+        {/* Comments List */}
         {comments.length === 0 ? (
           <p className="text-sm text-gray-500 dark:text-gray-400 italic">
             No comments yet. Be the first to start the discussion!

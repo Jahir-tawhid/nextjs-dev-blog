@@ -1,45 +1,53 @@
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbConnect";
+import Blog from "@/models/Blog";
 
-const mockBlogs = [
-  {
-    id: "1",
-    title: "Getting Started with Next.js App Router",
-    description:
-      "Next.js App Router provides a seamless way to build full-stack web applications.",
-    date: "2026-07-28",
-    author:
-      "Md. Jahirul Islam | Full-Stack Web Developer | Next.js & React | AI & SaaS Specialist",
-    content: `Next.js App Router provides a seamless way to build full-stack web applications. It brings server components, simplified routing, and nested layout capabilities straight out of the box.`,
-    tags: ["Next.js", "React", "Web Dev"],
-  },
-  {
-    id: "2",
-    title: "Mastering Tailwind CSS for Clean UI",
-    description:
-      "Discover best practices and utility classes to build fast, modern responsive layouts.",
-    date: "2026-07-28",
-    author:
-      "Md. Jahirul Islam | Full-Stack Web Developer | Next.js & React | AI & SaaS Specialist",
-    content: `Tailwind CSS has completely transformed how modern front-end developers handle styling. Instead of writing bulky custom CSS files, utility-first classes allow you to rapidly craft beautiful, responsive layouts.`,
-    tags: ["Tailwind", "CSS", "UI/UX"],
-  },
-  {
-    id: "3",
-    title: "Why JavaScript is Still King in 2026",
-    description:
-      "An overview of modern JavaScript capabilities, performance, and ecosystem growth.",
-    date: "2026-07-28",
-    author:
-      "Md. Jahirul Islam | Full-Stack Web Developer | Next.js & React | AI & SaaS Specialist",
-    content: `JavaScript continues to dominate full-stack and modern web application development in 2026. With frameworks like Next.js and the evolution of AI-driven web services, JavaScript remains the core foundation.`,
-    tags: ["JavaScript", "Web Dev", "Programming"],
-  },
-];
-
+// GET: Fetch all blogs from the database
 export async function GET() {
-  return NextResponse.json({
-    status: "success",
-    total: mockBlogs.length,
-    data: mockBlogs,
-  });
+  try {
+    await dbConnect();
+
+    // Sort by latest created blog first
+    const blogs = await Blog.find({}).sort({ createdAt: -1 });
+
+    return NextResponse.json({ success: true, data: blogs }, { status: 200 });
+  } catch (error) {
+    // Log error to console for debugging purposes
+    console.error("GET /api/blogs Error:", error.message || error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch blogs",
+        error: error.message || "Server Error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+// POST: Create a new blog post
+export async function POST(request) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+
+    const newBlog = await Blog.create(body);
+
+    return NextResponse.json(
+      { success: true, message: "Blog created successfully", data: newBlog },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("POST /api/blogs Error:", error.message || error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to create blog",
+        error: error.message || "Server Error",
+      },
+      { status: 400 },
+    );
+  }
 }

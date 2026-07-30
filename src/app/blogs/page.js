@@ -10,14 +10,38 @@ export default function BlogsPage() {
   const [selectedTag, setSelectedTag] = useState("All");
   const [loading, setLoading] = useState(true);
 
-  // Fetch blogs from localStorage safely
-  const loadPosts = () => {
+  // Safe API fetch for blogs
+  const fetchPosts = async () => {
     setLoading(true);
     try {
-      const saved = localStorage.getItem("blog_posts");
-      const savedPosts = saved ? JSON.parse(saved) : [];
-      setPosts(Array.isArray(savedPosts) ? savedPosts : []);
+      const res = await fetch("/api/blogs");
+
+      // 1. Check HTTP response status (200-299)
+      if (!res.ok) {
+        console.error(`API returned error status: ${res.status}`);
+        setPosts([]);
+        return;
+      }
+
+      // 2. Check Content-Type to prevent HTML parsing errors
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error(
+          "Expected JSON response, but received HTML or other format",
+        );
+        setPosts([]);
+        return;
+      }
+
+      const result = await res.json();
+
+      if (result.success && Array.isArray(result.data)) {
+        setPosts(result.data);
+      } else {
+        setPosts([]);
+      }
     } catch (e) {
+      console.error("Failed to fetch blogs from API:", e);
       setPosts([]);
     } finally {
       setLoading(false);
@@ -25,49 +49,50 @@ export default function BlogsPage() {
   };
 
   useEffect(() => {
-    Promise.resolve().then(() => {
-      loadPosts();
-    });
+    fetchPosts();
   }, []);
 
-  const handleResetData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/blogs");
-      const initialBlogs = await res.json();
-      const safeData = Array.isArray(initialBlogs) ? initialBlogs : [];
-      localStorage.setItem("blog_posts", JSON.stringify(safeData));
-      setPosts(safeData);
-    } catch (error) {
-      console.error("Failed to reset blogs data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Delete blog using API
+  const handleDelete = async (slug) => {
+    if (!confirm("Are you sure you want to delete this blog post?")) return;
 
-  const handleDelete = (id) => {
-    const safePosts = Array.isArray(posts) ? posts : [];
-    const updated = safePosts.filter((p) => p.id !== id);
-    setPosts(updated);
-    localStorage.setItem("blog_posts", JSON.stringify(updated));
+    try {
+      const res = await fetch(`/api/blogs/${slug}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        setPosts((prevPosts) => prevPosts.filter((p) => p.slug !== slug));
+      } else {
+        alert(result.message || "Failed to delete post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
   // Safe Check for posts array
   const safePosts = Array.isArray(posts) ? posts : [];
 
-  // Get all unique tags (Safely handles undefined/null)
+  // Get all unique tags (Safely handles category/tags)
   const allTags = [
     "All",
     ...new Set(
-      safePosts.flatMap((p) => (Array.isArray(p?.tags) ? p.tags : [])),
+      safePosts.flatMap((p) => {
+        if (Array.isArray(p?.tags)) return p.tags;
+        if (p?.category) return [p.category];
+        return [];
+      }),
     ),
   ];
 
   // Filter logic
   const filteredPosts = safePosts.filter((post) => {
     const title = post?.title || "";
-    const description = post?.description || post?.desc || "";
-    const tags = Array.isArray(post?.tags) ? post.tags : [];
+    const description =
+      post?.excerpt || post?.description || post?.content || "";
+    const tags = Array.isArray(post?.tags) ? post.tags : [post?.category || ""];
 
     const matchesSearch =
       title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,14 +103,14 @@ export default function BlogsPage() {
   });
 
   return (
-    <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Header Section */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-gray-200 dark:border-gray-800 pb-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500 dark:from-white dark:via-gray-200 dark:to-gray-500 bg-clip-text text-transparent mb-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             My Portfolio & Blog
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Articles and insights on modern full-stack web development.
           </p>
         </div>
@@ -94,10 +119,10 @@ export default function BlogsPage() {
           <ThemeToggle />
           <button
             type="button"
-            onClick={handleResetData}
-            className="text-xs font-medium bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 hover:bg-red-200 dark:hover:bg-red-900/50 px-3.5 py-1.5 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer"
+            onClick={fetchPosts}
+            className="text-xs font-medium bg-blue-100 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-3.5 py-1.5 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer"
           >
-            Reset All Data
+            Refresh Data
           </button>
         </div>
       </div>
@@ -151,17 +176,23 @@ export default function BlogsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredPosts.map((post) => (
             <div
-              key={post.id}
+              key={post._id || post.slug}
               className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm flex flex-col justify-between hover:border-gray-300 dark:hover:border-gray-700 transition-all"
             >
               <div>
-                {/* 1. Meta Section (Author on left, date on right) */}
+                {/* 1. Meta Section */}
                 <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mb-3">
                   <span className="font-medium truncate pr-2">
-                    By Md. Jahirul Islam | Full-Stack Web Developer
+                    By {post.author || "Md. Jahirul Islam"}
                   </span>
                   <span className="whitespace-nowrap text-gray-400 dark:text-gray-500 text-[11px]">
-                    {post.date || "Jul 28, 2026"}
+                    {post.createdAt
+                      ? new Date(post.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "Jul 28, 2026"}
                   </span>
                 </div>
 
@@ -172,21 +203,21 @@ export default function BlogsPage() {
 
                 {/* 3. Post Description */}
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
-                  {post.description || post.desc}
+                  {post.excerpt || post.description || post.content}
                 </p>
               </div>
 
               {/* 4. Bottom Action Area */}
               <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800/60 mt-auto">
                 <Link
-                  href={`/blogs/${post.id}`}
+                  href={`/blogs/${post.slug}`}
                   className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                 >
                   Read Article &rarr;
                 </Link>
                 <button
                   type="button"
-                  onClick={() => handleDelete(post.id)}
+                  onClick={() => handleDelete(post.slug)}
                   className="text-xs font-semibold text-red-500 hover:text-red-700 hover:underline transition-colors cursor-pointer"
                 >
                   Delete
